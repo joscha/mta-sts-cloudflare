@@ -8,12 +8,13 @@
 // and the _smtp._tls.yourdomain.com TXT record for reporting.
 
 const stsPolicies = {
-  "mta-sts.yourdomain.com":
+  "yourdomain.com":
 `version: STSv1
 mode: enforce
 mx: mail.yourdomain.com
 max_age: 86400`
 }
+
 
 const respHeaders = {
   "Content-Type": "text/plain;charset=UTF-8",
@@ -25,17 +26,23 @@ addEventListener("fetch", event => {
 })
 
 async function handleRequest(request) {
-  let reqUrl = new URL(request.url)
+  const reqUrl = new URL(request.url)
 
-  if (!stsPolicies.hasOwnProperty(reqUrl.hostname)) {
-    return new Response(`${reqUrl.hostname} is not defined in the mta-sts worker\n`, {status: 500, headers: respHeaders})
+  if (!reqUrl.hostname.startsWith("mta-sts.")) {
+    return new Response(`Incorrect worker route. mta-sts policies must be served on the mta-sts subdomain\n`, {status: 500, headers: respHeaders})
   }
 
-  if (reqUrl.protocol === "https:" && reqUrl.pathname === "/.well-known/mta-sts.txt") {
-    return new Response(stsPolicies[reqUrl.hostname] + "\n", {status: 200, headers: respHeaders})
-  } else {
+  const policyHost = reqUrl.hostname.slice(8)
+
+  if (!stsPolicies.hasOwnProperty(policyHost)) {
+    return new Response(`${policyHost} is not defined in the mta-sts worker\n`, {status: 500, headers: respHeaders})
+  }
+
+  if (reqUrl.protocol !== "https:" || reqUrl.pathname !== "/.well-known/mta-sts.txt") {
     reqUrl.protocol = "https:"
     reqUrl.pathname = "/.well-known/mta-sts.txt"
     return Response.redirect(reqUrl, 301)
   }
+
+  return new Response(stsPolicies[policyHost] + "\n", {status: 200, headers: respHeaders})
 }
