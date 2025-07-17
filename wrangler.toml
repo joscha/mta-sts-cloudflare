@@ -1,0 +1,7 @@
+name = "mta-sts"
+main = "mta-sts.ts"
+compatibility_date = "2025-07-17"
+
+[[routes]]
+pattern = "mta-sts.yourdomain.com"
+custom_domain = true
