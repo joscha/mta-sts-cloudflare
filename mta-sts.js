@@ -11,17 +11,18 @@
 // and the _smtp._tls.yourdomain.com TXT record for reporting.
 
 const stsPolicies = {
-  "yourdomain.com":
-`version: STSv1
-mode: enforce
-mx: mail.yourdomain.com
-max_age: 86400`
+  "yourdomain.com": ` version: STSv1
+                      mode: enforce
+                      mx: smtp.google.com
+                      mx: aspmx.l.google.com
+                      mx: *.aspmx.l.google.com
+                      max_age: 604800
+                      `
 }
 
 
 const respHeaders = {
-  "Content-Type": "text/plain;charset=UTF-8",
-  "X-Clacks-Overhead": "GNU Terry Pratchett, Jon Postel, Alan Turing, Dan Kaminsky"
+  "Content-Type": "text/plain;charset=UTF-8"
 }
 
 addEventListener("fetch", event => {
@@ -46,6 +47,6 @@ async function handleRequest(request) {
     reqUrl.pathname = "/.well-known/mta-sts.txt"
     return Response.redirect(reqUrl, 301)
   }
-
-  return new Response(stsPolicies[policyHost] + "\n", {status: 200, headers: respHeaders})
+  const ret = stsPolicies[policyHost].split(/\s*\n\s*/).filter(Boolean).join('\n').trim()
+  return new Response(ret + "\n", {status: 200, headers: respHeaders})
 }
