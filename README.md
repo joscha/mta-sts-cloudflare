@@ -2,7 +2,14 @@
 
 Template for a Cloudflare worker for handling the MTA STS policy file.
 
-Create a copy of this template and connect it via the github feature from Cloudflare workers.
+Create a copy of this template and connect it via the github feature from Cloudflare workers:
+
+<img width="310" height="345" alt="SCR-20250717-orqf" src="https://github.com/user-attachments/assets/1c7f2a72-4e21-4008-8826-67b45cbb2ade" />
+
+and then: 
+
+<img width="603" height="98" alt="SCR-20250717-opyc" src="https://github.com/user-attachments/assets/2d42550e-5f93-4d07-a9d0-d78aeb2ff11e" />
+
 
 ---
 
